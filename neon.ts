@@ -7,6 +7,9 @@ export default defineConfig({
     tasks: {
       name: "Hobo task API",
       source: "server/tasks.ts",
+      env: {
+        APP_ORIGINS: "https://zainulabedeen123.github.io",
+      },
     },
   },
   // Branch policy: per-branch tuning

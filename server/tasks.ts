@@ -82,10 +82,10 @@ async function authenticate(c: AppContext, next: Next) {
       return c.json({ error: "Invalid session" }, 401);
     }
     c.set("userId", payload.sub);
-    await next();
   } catch {
     return c.json({ error: "Session expired or invalid" }, 401);
   }
+  await next();
 }
 
 app.use("/tasks", authenticate);
