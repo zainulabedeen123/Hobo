@@ -1,0 +1,84 @@
+:root {
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  padding: 4px;
+  background: transparent;
+  user-select: none;
+}
+
+.mini-launcher {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 19px;
+  color: #1b230f;
+  background: linear-gradient(145deg, #d9fb9b, #b4e558);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  cursor: grab;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.mini-launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 11px 30px rgba(0, 0, 0, 0.42), 0 0 0 3px rgba(201, 242, 124, 0.12);
+}
+
+.mini-launcher:active {
+  cursor: grabbing;
+  transform: translateY(0) scale(0.97);
+}
+
+.mini-launcher:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.mini-bunny {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.mini-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 23px;
+  height: 23px;
+  padding: 0 6px;
+  border: 2px solid #c9f27c;
+  border-radius: 99px;
+  color: #f4f6ef;
+  background: #20251d;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.35);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
