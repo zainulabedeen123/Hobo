@@ -223,11 +223,16 @@ let account;
 
 function queueCloudSync() {
   if (!activeUser) return Promise.resolve();
+  const userId = activeUser.id;
+  const pendingKey = `hobo.cloud.pending.${userId}`;
   const snapshot = tasks.map((task) => ({ ...task }));
+  localStorage.setItem(pendingKey, "true");
   account?.setSyncState("syncing");
   cloudSyncQueue = cloudSyncQueue.catch(() => {}).then(async () => {
+    if (activeUser?.id !== userId) throw new Error("Account changed before sync completed.");
     await syncCloudTasks(snapshot);
-    account?.setSyncState("synced");
+    localStorage.removeItem(pendingKey);
+    if (activeUser?.id === userId) account?.setSyncState("synced");
   });
   return cloudSyncQueue;
 }
@@ -238,14 +243,27 @@ async function connectCloud(user, { forceDownload = false } = {}) {
   await cloudSyncQueue.catch(() => {});
   const cloudTasks = await listCloudTasks();
   const initializedKey = `hobo.cloud.initialized.${user.id}`;
+  const pendingKey = `hobo.cloud.pending.${user.id}`;
   const hasSyncedHere = localStorage.getItem(initializedKey) === "true";
+  const hasPendingSync = localStorage.getItem(pendingKey) === "true";
+  const lastUserId = localStorage.getItem("hobo.cloud.lastUserId");
+  const sameLocalOwner = !lastUserId || lastUserId === user.id;
+  const shouldUpload = !forceDownload && sameLocalOwner && (hasPendingSync || !hasSyncedHere);
 
-  if (!forceDownload && cloudTasks.length === 0 && tasks.length > 0 && !hasSyncedHere) {
-    tasks = await syncCloudTasks(tasks);
+  if (shouldUpload) {
+    let nextTasks = tasks;
+    if (!hasSyncedHere && cloudTasks.length > 0) {
+      const cloudIds = new Set(cloudTasks.map((task) => task.id));
+      nextTasks = [...cloudTasks, ...tasks.filter((task) => !cloudIds.has(task.id))];
+    }
+    if (nextTasks.length > 500) throw new Error("Hobo can sync up to 500 tasks per account.");
+    tasks = await syncCloudTasks(nextTasks);
   } else {
     tasks = await repository.replaceAll(cloudTasks);
   }
+  localStorage.removeItem(pendingKey);
   localStorage.setItem(initializedKey, "true");
+  localStorage.setItem("hobo.cloud.lastUserId", user.id);
   render();
   account?.setSyncState("synced");
 }
