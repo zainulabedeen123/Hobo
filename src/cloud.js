@@ -34,9 +34,17 @@ export async function listCloudTasks() {
 }
 
 export async function syncCloudTasks(tasks) {
+  const normalizedTasks = tasks.map((task) => ({
+    id: task.id,
+    text: task.text,
+    completed: Boolean(task.completed),
+    tag: task.tag || "",
+    timerEndsAt: task.timerEndsAt ?? null,
+    createdAt: task.createdAt,
+  }));
   const body = await request("/tasks/sync", {
     method: "PUT",
-    body: JSON.stringify({ tasks }),
+    body: JSON.stringify({ tasks: normalizedTasks }),
   });
   if (!Array.isArray(body?.tasks)) throw new Error("The cloud returned an invalid task list.");
   return body.tasks;

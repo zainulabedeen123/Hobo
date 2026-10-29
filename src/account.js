@@ -125,11 +125,15 @@ export function createAccountController({ root, button, onAuthenticated, onSigne
       close();
     } catch (error) {
       syncState = user ? "error" : "local";
-      setButton();
-      errorElement.textContent = error.message || "Something went wrong. Please try again.";
-      errorElement.hidden = false;
-      submit.disabled = false;
-      submit.textContent = mode === "sign-up" ? "Create account" : "Sign in";
+      if (user) {
+        render();
+      } else {
+        setButton();
+        errorElement.textContent = error.message || "Something went wrong. Please try again.";
+        errorElement.hidden = false;
+        submit.disabled = false;
+        submit.textContent = mode === "sign-up" ? "Create account" : "Sign in";
+      }
       onError?.(error);
     } finally {
       busy = false;
@@ -184,7 +188,7 @@ export function createAccountController({ root, button, onAuthenticated, onSigne
     setSyncState(state) {
       syncState = state;
       setButton();
-      if (!panel.hidden && user) render();
+      if (!busy && !panel.hidden && user) render();
     },
   };
 }

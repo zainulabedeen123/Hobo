@@ -1,8 +1,13 @@
 import { createAuthClient } from "@neondatabase/auth";
+import { BetterAuthVanillaAdapter } from "@neondatabase/auth/vanilla/adapters";
 
 const authUrl = import.meta.env.VITE_NEON_AUTH_URL;
 export const authConfigured = Boolean(authUrl && import.meta.env.VITE_TASK_API_URL);
-export const authClient = authConfigured ? createAuthClient(authUrl) : null;
+export const authClient = authConfigured ? createAuthClient(authUrl, {
+  adapter: BetterAuthVanillaAdapter({
+    fetchOptions: { credentials: "include" },
+  }),
+}) : null;
 
 function authError(result, fallback) {
   if (result?.error) {
@@ -41,8 +46,15 @@ export async function signOut() {
 }
 
 export async function getAccessToken() {
-  const result = await authClient.token();
-  const data = authError(result, "Could not authorize cloud sync.");
-  if (!data?.token) throw new Error("Your session has expired. Please sign in again.");
-  return data.token;
+  // Managed Auth can return the JWT directly or attached to the cached session.
+  let result = await authClient.token();
+  let data = authError(result, "Could not authorize cloud sync.");
+  let token = data?.token || data?.session?.token;
+  if (!token && typeof authClient.getToken === "function") {
+    result = await authClient.getToken();
+    data = authError(result, "Could not authorize cloud sync.");
+    token = data?.token;
+  }
+  if (!token) throw new Error("Your session has expired. Please sign in again.");
+  return token;
 }
