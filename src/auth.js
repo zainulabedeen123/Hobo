@@ -40,6 +40,15 @@ export async function signIn({ email, password }) {
   return data.user;
 }
 
+export async function signInWithGoogle() {
+  const callbackURL = new URL(import.meta.env.BASE_URL, window.location.origin).href;
+  const result = await authClient.signIn.social({
+    provider: "google",
+    callbackURL,
+  });
+  authError(result, "Could not sign in with Google.");
+}
+
 export async function signOut() {
   const result = await authClient.signOut();
   authError(result, "Could not sign out.");

@@ -887,6 +887,50 @@ kbd {
   line-height: 1.55;
 }
 
+.google-signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 43px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #30343b;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.google-signin:hover {
+  background: #f1f3f4;
+}
+
+.google-signin svg {
+  width: 17px;
+  height: 17px;
+  stroke: none;
+}
+
+.account-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  color: #747d6c;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.account-divider::before,
+.account-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .account-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
